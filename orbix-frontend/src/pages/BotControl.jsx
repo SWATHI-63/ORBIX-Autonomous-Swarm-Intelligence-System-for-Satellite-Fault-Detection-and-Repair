@@ -1,22 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Zap, Target, AlertTriangle } from 'lucide-react';
 
-const initialBots = [
-  { id: 'Bot-01', type: 'Scout', energy: 85, task: 'Patrol Sector 4' },
-  { id: 'Bot-02', type: 'Repair', energy: 42, task: 'Fixing Sat-Alpha' },
-  { id: 'Bot-03', type: 'Relay', energy: 95, task: 'Comm Relay Mode' },
-  { id: 'Bot-04', type: 'Heavy', energy: 12, task: 'Returning to Base' },
-];
-
 const BotControl = () => {
-  const [bots, setBots] = useState(initialBots);
+  const [bots, setBots] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:8080/api/bots')
+      .then(res => res.json())
+      .then(data => setBots(data))
+      .catch(err => console.error("Failed to fetch bots", err));
+  }, []);
 
   const handleOverride = (id) => {
-    setBots(bots.map(bot => 
-      bot.id === id 
-        ? { ...bot, task: bot.task.includes('Manual') ? 'Awaiting Directions...' : 'Manual Override Initiated...' } 
-        : bot
-    ));
+    // Optionally update UI optimistically
+    // Make POST to backend
+    fetch(`http://localhost:8080/api/bots/${id}/override`, { method: 'POST' })
+      .then(res => res.json())
+      .then(updatedBot => {
+        setBots(bots.map(bot => bot.id === id ? updatedBot : bot));
+      })
+      .catch(err => console.error("Failed to override bot", err));
   };
 
   const getEnergyColor = (energy) => {
