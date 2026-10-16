@@ -1,16 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const FaultMonitor = () => {
-  const [faultData, setFaultData] = useState([]);
-
-  useEffect(() => {
-    fetch('http://localhost:8080/api/faults')
-      .then(res => res.json())
-      .then(data => setFaultData(data))
-      .catch(err => console.error("Failed to fetch faults", err));
-  }, []);
-
-  const getSeverityStyles = (severity) => {
+const getSeverityStyles = (severity) => {
   switch(severity) {
     case 'Critical': return 'text-red-400 bg-red-400/10 border-red-400/20';
     case 'High': return 'text-orange-400 bg-orange-400/10 border-orange-400/20';
@@ -29,6 +19,14 @@ const getStatusStyles = (status) => {
 };
 
 const FaultMonitor = () => {
+  const [faultData, setFaultData] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:8080/api/faults')
+      .then(res => res.json())
+      .then(data => setFaultData(data))
+      .catch(err => console.error("Failed to fetch faults", err));
+  }, []);
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto min-h-[85vh]">
       <div className="flex items-center gap-2 md:gap-4 mb-4 md:mb-6">
